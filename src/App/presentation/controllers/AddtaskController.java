@@ -186,7 +186,16 @@ public class AddtaskController implements Initializable {
 
     private void insertProjectTask() {
 
-        String[] EmpArrayStr = employeeAssigned.getValue().split("-");
+        String selectedEmployee = employeeAssigned.getValue();
+
+        if (selectedEmployee == null || selectedEmployee.trim().isEmpty()) {
+            invalid_date_label.setText("Un employé doit être sélectionné.");
+            invalid_date_label.setVisible(true);
+            return;
+        }
+
+        String[] EmpArrayStr = selectedEmployee.split("-");
+
         int assignedEmployeeId = Integer.parseInt(EmpArrayStr[0].trim());
 
         if(assignedEmployeeId == 0){

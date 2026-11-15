@@ -345,11 +345,16 @@ public class ProjectDetailController implements Initializable {
         SingletonConnexionDB singletonConnexionDB =new SingletonConnexionDB();
         Connection connection= singletonConnexionDB.getConnection();
 
-        String sql = "UPDATE project_task SET progress= '"+task.getTaskProgress()+"' WHERE task_name='"+task.getTaskName()+"'";
+        String sql =
+                "UPDATE project_task SET progress = ? WHERE id = ? AND task_name = ?";
 
-        Statement statement = connection.createStatement();
+        PreparedStatement statement = connection.prepareStatement(sql);
 
-        statement.executeUpdate(sql);
+        statement.setString(1, taskStringCellEditEvent.getNewValue());
+        statement.setInt(2, Integer.parseInt(getProjectID().getText()));
+        statement.setString(3, task.getTaskName());
+
+        statement.executeUpdate();
 
         statement.close();
         connection.close();
@@ -468,9 +473,13 @@ public class ProjectDetailController implements Initializable {
             Task selectedItem = tableview.getSelectionModel().getSelectedItem();
             tableview.getItems().remove(selectedItem);
 
-            PreparedStatement st = connection.prepareStatement("DELETE FROM project_task WHERE task_name = '" + selectedItem.getTaskName() + "';");
-            st.executeUpdate();
+            String sql = "DELETE FROM project_task WHERE id = ? AND task_name = ?";
 
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, Integer.parseInt(getProjectID().getText()));
+            st.setString(2, selectedItem.getTaskName());
+
+            st.executeUpdate();
             st.close();
             connection.close();
         }
